@@ -20,7 +20,9 @@ pip install -r requirements.txt
 
 ### How to use
 
-Just run.
+Open command line (in windows `Win+R` and write `cmd` and `Ok`). Go to directory with program or just write in cmd:
+
+`python <PATH TO PROGRAM>\main.py`
 
 ### Project Goals
 
