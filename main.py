@@ -5,6 +5,8 @@ import requests
 import telegram
 import dotenv
 
+from bot_handlers import TelegramLogsHandler
+
 
 def raise_response_errors(response):
     """Check response for errors.
@@ -78,23 +80,25 @@ def send_result_of_check(response, bot, chat_id):
 
 if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s  %(name)s  %(levelname)s  %(message)s', level=logging.DEBUG)
-    logger = logging.getLogger('dvmn bot')
     dotenv.load_dotenv()
     dvmn_token = os.getenv('DVMN_TOKEN')
     bot_token = os.getenv('BOT_TOKEN')
     chat_id = os.getenv('CHAT_ID')
 
-    logger.debug('Got env params')
-
     bot = telegram.Bot(token=bot_token)
-    logger.debug('Telegram bot created')
 
     # Initialize chat_id if bot using firsttime
     if chat_id is None:
         chat_id = get_chat_id(bot_token=bot_token)
         with open('.env', 'a') as env:
             env.write(f'\nCHAT_ID={chat_id}')
-        logger.debug('Got and saved id of chat')
+
+    logger = logging.getLogger('dvmn bot')
+    handler = TelegramLogsHandler(bot=bot, chat_id=chat_id)
+    logger.addHandler(handler)
+    logger.debug('Got env params')
+    logger.debug('Telegram bot created')
+    logger.debug('Got and saved id of chat')
 
     timestamp = ''
     while True:
