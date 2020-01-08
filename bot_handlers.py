@@ -1,7 +1,5 @@
 import logging
 
-NOTSET = 0  # param of logging __init__.py
-
 
 class TelegramLogsHandler(logging.Handler):
     """Handler which send logs in Telegram.
@@ -10,8 +8,8 @@ class TelegramLogsHandler(logging.Handler):
     :param chat_id: int, id of chat
     """
 
-    def __init__(self, bot, chat_id, level=NOTSET):
-        logging.Handler.__init__(self, level=level)
+    def __init__(self, bot, chat_id, level=logging.NOTSET):
+        super().__init__(level=level)
         self.bot = bot
         self.chat_id = chat_id
 
