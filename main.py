@@ -96,9 +96,7 @@ if __name__ == '__main__':
 
         logger = logging.getLogger('dvmn bot')
         tg_handler = TelegramLogsHandler(bot=bot, chat_id=chat_id, level=logging.INFO)
-        # null_handler = logging.NullHandler()
         logger.addHandler(tg_handler)
-        # logger.addHandler(null_handler)
         logger.debug('Got env params')
         logger.debug('Telegram bot created')
         logger.debug('Got and saved id of chat')
