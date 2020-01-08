@@ -79,7 +79,9 @@ def send_result_of_check(response, bot, chat_id):
 
 
 if __name__ == '__main__':
+    restart = False
     try:
+        restart_msg = 're' if restart else ''  # Restarted after critical error or started
         logging.basicConfig(format='%(asctime)s  %(name)s  %(levelname)s  %(message)s', level=logging.DEBUG)
         dotenv.load_dotenv()
         dvmn_token = os.getenv('DVMN_TOKEN')
@@ -100,7 +102,7 @@ if __name__ == '__main__':
         logger.debug('Got env params')
         logger.debug('Telegram bot created')
         logger.debug('Got and saved id of chat')
-        logger.info('Bot started')
+        logger.info(f'Bot {restart_msg}started')
 
         timestamp = ''
         while True:
@@ -119,4 +121,6 @@ if __name__ == '__main__':
                 logger.error('Connection error. Waiting connection.')
 
     except Exception:
-        logger.exception()  # Если здесь вместо записи в лог вызвать raise, то бот не поднимется
+        # If critical error happens. Bot send message to user and write traceback in log
+        logger.exception('Critical error')
+        restart = True
