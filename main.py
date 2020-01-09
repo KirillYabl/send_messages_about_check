@@ -80,47 +80,47 @@ def send_result_of_check(response, bot, chat_id):
 
 if __name__ == '__main__':
     restart = False
-    try:
-        restart_msg = 're' if restart else ''  # Restarted after critical error or started
-        logging.basicConfig(format='%(asctime)s  %(name)s  %(levelname)s  %(message)s', level=logging.DEBUG)
-        dotenv.load_dotenv()
-        dvmn_token = os.getenv('DVMN_TOKEN')
-        bot_token = os.getenv('BOT_TOKEN')
-        chat_id = os.getenv('CHAT_ID')
+    while True:
+        try:
+            restart_msg = 're' if restart else ''  # Restarted after critical error or started
+            logging.basicConfig(format='%(asctime)s  %(name)s  %(levelname)s  %(message)s', level=logging.DEBUG)
+            dotenv.load_dotenv()
+            dvmn_token = os.getenv('DVMN_TOKEN')
+            bot_token = os.getenv('BOT_TOKEN')
+            chat_id = os.getenv('CHAT_ID')
 
-        bot = telegram.Bot(token=bot_token)
+            bot = telegram.Bot(token=bot_token)
 
-        # Initialize chat_id if bot using firsttime
-        if chat_id is None:
-            chat_id = get_chat_id(bot_token=bot_token)
-            with open('.env', 'a') as env:
-                env.write(f'\nCHAT_ID={chat_id}')
+            # Initialize chat_id if bot using firsttime
+            if chat_id is None:
+                chat_id = get_chat_id(bot_token=bot_token)
+                with open('.env', 'a') as env:
+                    env.write(f'\nCHAT_ID={chat_id}')
 
-        logger = logging.getLogger('dvmn bot')
-        tg_handler = TelegramLogsHandler(bot=bot, chat_id=chat_id, level=logging.INFO)
-        logger.addHandler(tg_handler)
-        logger.debug('Got env params')
-        logger.debug('Telegram bot created')
-        logger.debug('Got and saved id of chat')
-        logger.info(f'Bot {restart_msg}started')
+            logger = logging.getLogger('dvmn bot')
+            tg_handler = TelegramLogsHandler(bot=bot, chat_id=chat_id, level=logging.INFO)
+            logger.addHandler(tg_handler)
+            logger.debug('Got env params')
+            logger.debug('Telegram bot created')
+            logger.debug('Got and saved id of chat')
+            logger.info(f'Bot {restart_msg}started')
 
-        timestamp = ''
-        while True:
-            try:
-                response = get_list_of_work_checks_in_json(token=dvmn_token, timestamp=timestamp)
-                if response['status'] == 'found':
-                    timestamp = response['last_attempt_timestamp']
-                    logger.debug('Found. Timestamp={}'.format(timestamp))
-                    send_result_of_check(response, bot, chat_id)
-                elif response['status'] == 'timeout':
-                    timestamp = response['timestamp_to_request']
-                    logger.debug('TimeOut. Timestamp={}'.format(timestamp))
-            except requests.exceptions.ReadTimeout:
-                logger.debug('Read timeout. Making new request.')
-            except requests.exceptions.ConnectionError:
-                logger.error('Connection error. Waiting connection.')
-
-    except Exception:
-        # If critical error happens. Bot send message to user and write traceback in log
-        logger.exception('Critical error')
-        restart = True
+            timestamp = ''
+            while True:
+                try:
+                    response = get_list_of_work_checks_in_json(token=dvmn_token, timestamp=timestamp)
+                    if response['status'] == 'found':
+                        timestamp = response['last_attempt_timestamp']
+                        logger.debug('Found. Timestamp={}'.format(timestamp))
+                        send_result_of_check(response, bot, chat_id)
+                    elif response['status'] == 'timeout':
+                        timestamp = response['timestamp_to_request']
+                        logger.debug('TimeOut. Timestamp={}'.format(timestamp))
+                except requests.exceptions.ReadTimeout:
+                    logger.debug('Read timeout. Making new request.')
+                except requests.exceptions.ConnectionError:
+                    logger.error('Connection error. Waiting connection.')
+        except Exception:
+            # If critical error happens. Bot send message to user and write traceback in log
+            logger.exception('Critical error in ')
+            restart = True
