@@ -1,12 +1,9 @@
 import os
 import logging
-import threading
 
 import requests
 import telegram
 import dotenv
-from telegram.utils import request as tg_request
-from telegram.ext import Updater, CommandHandler
 
 from bot_handlers import TelegramLogsHandler
 
@@ -81,40 +78,18 @@ def send_result_of_check(response, bot, chat_id):
         bot.send_message(chat_id=chat_id, text=text)
 
 
-def start(bot, update):
-    """Just hello message for /start command.
-    :param bot: tg bot object
-    :param update: event with update tg object
-    :param project_id: str, secret project id
-    :param session_id: str or int, some number
-    :param language_code: event with update tg object
-    """
-    message = """
-    Здравствуйте, на связи ваш бот для работы с Dvmn.org!
-    
-    Я умею следить за статусом проверок ваших работ, набрав сообщение выше Вы
-    автоматически согласились, что вся ответственность за результаты Ваших проверок
-    лежит исключительно на вас.
-    
-    /stats Покажет статистику вашего dvmn профиля
-    /futurework Покажет работы, которые вы пытались сдать, но пока не сдали, а также их статус.
-    /pride Покажет уроки, которые вы успешно завершили. Приятно иногда насладиться результатами. 
-    """
-    bot.send_message(chat_id=update.message.chat_id, text=message)
-
-
 if __name__ == '__main__':
     restart = False
     while True:
         try:
             restart_msg = 're' if restart else ''  # Restarted after critical error or started
-            logging.basicConfig(format='%(asctime)s  %(name)s  %(levelname)s  %(message)s', level=logging.INFO)
+            logging.basicConfig(format='%(asctime)s  %(name)s  %(levelname)s  %(message)s', level=logging.DEBUG)
             dotenv.load_dotenv()
             dvmn_token = os.getenv('DVMN_TOKEN')
             bot_token = os.getenv('BOT_TOKEN')
             chat_id = os.getenv('CHAT_ID')
 
-            updater = Updater(token=bot_token, request_kwargs={'proxy_url': 'https://35.220.252.16:8080'})
+            bot = telegram.Bot(token=bot_token)
 
             # Initialize chat_id if bot using firsttime
             if chat_id is None:
@@ -123,13 +98,12 @@ if __name__ == '__main__':
                     env.write(f'\nCHAT_ID={chat_id}')
 
             logger = logging.getLogger('dvmn bot')
-            tg_handler = TelegramLogsHandler(bot=updater.bot, chat_id=chat_id, level=logging.INFO)
+            tg_handler = TelegramLogsHandler(bot=bot, chat_id=chat_id, level=logging.INFO)
             logger.addHandler(tg_handler)
             logger.debug('Got env params')
             logger.debug('Telegram bot created')
             logger.debug('Got and saved id of chat')
             logger.info(f'Bot {restart_msg}started')
-
 
             timestamp = ''
             while True:
@@ -142,7 +116,6 @@ if __name__ == '__main__':
                     elif response['status'] == 'timeout':
                         timestamp = response['timestamp_to_request']
                         logger.debug('TimeOut. Timestamp={}'.format(timestamp))
-                    updater.bot.get_updates()
                 except requests.exceptions.ReadTimeout:
                     logger.debug('Read timeout. Making new request.')
                 except requests.exceptions.ConnectionError:
