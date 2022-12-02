@@ -7,6 +7,8 @@ import dotenv
 
 from bot_handlers import TelegramLogsHandler
 
+logger = logging.getLogger('dvmn bot')
+
 
 def raise_response_errors(response):
     """Check response for errors.
@@ -97,7 +99,6 @@ if __name__ == '__main__':
                 with open('.env', 'a') as env:
                     env.write(f'\nCHAT_ID={chat_id}')
 
-            logger = logging.getLogger('dvmn bot')
             tg_handler = TelegramLogsHandler(bot=bot, chat_id=chat_id, level=logging.INFO)
             logger.addHandler(tg_handler)
             logger.debug('Got env params')
