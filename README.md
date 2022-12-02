@@ -14,35 +14,52 @@ You need to create `.env` file and write in file parameters `DVMN_TOKEN` and `BO
 
 After you got `BOT_TOKEN` you need to write to you bot in telegram any message (`/start` for example).
 
+###### Without Docker
+
 Python3 should be already installed. 
 Then use `pip` (or `pip3`, if there is a conflict with Python2) to install dependencies:
 ```
-pip install -r requirements.txt
+pip install -r src/requirements.txt
 ```
 
-##### Deploy on heroku
+###### With Docker
+[Docker Desktop should be installed](https://docs.docker.com/desktop/)
 
-For deploy this bot on [heroku](https://heroku.com) you need to do next:
+Then build docker image:
+```
+docker build -t <YOUR DOCKER HUB USERNAME>/dvmn_checker_bot .
+```
 
-1) Sign up in heroku
-2) Create app
-3) Clone this repository and download on heroku with GitHub method (tab `Deploy` in heroku app)
-4) Add `Config Vars` in `Settings` tab in heroku app
-    1) `DVMN_TOKEN` - secret token for [dvmn](https://dvmn.org) API. For getting this token you need do authorization in site and go on [this](https://dvmn.org/api/docs/) page, where you can find token.
+Or you can pull ready to use image:
+```
+docker pull kiablunovskii/dvmn_checker_bot
+```
 
-    2) `BOT_TOKEN` - secret token for your telegram bot. Just use [this](https://core.telegram.org/bots#creating-a-new-bot) instruction (use VPN to open this link in Russia).
-    
 ### How to use
 
-##### Run in Local
+##### Without Docker
 
 Open command line (in windows `Win+R` and write `cmd` and `Ok`). Go to directory with program or just write in cmd:
 
-`python <PATH TO PROGRAM>\main.py`
+```
+python <PATH TO PROGRAM>\main.py
+```
 
-##### Deploy on heroku
+##### With docker
 
-Run bot in `Resources` tab in heroku app. `Procfile` for run in repo already.
+Open command line (in windows `Win+R` and write `cmd` and `Ok`). Go to directory with program and write in cmd:
+
+```
+docker run -dp 5000:5000 --env-file ./.env <YOUR DOCKER HUB USERNAME>/dvmn_checker_bot
+```
+
+You can drop `d` option if you want to watch logs.
+
+Or (if you pulled my repository):
+Or you can pull ready to use image:
+```
+docker run -dp 5000:5000 --env-file ./.env kiablunovskii/dvmn_checker_bot
+```
 
 ### References
 
@@ -50,7 +67,7 @@ Run bot in `Resources` tab in heroku app. `Procfile` for run in repo already.
 
 [telegram bots documentation](https://core.telegram.org/bots#creating-a-new-bot)
 
-[heroku](https://heroku.com)
+[Docker](https://www.docker.com/)
 
 ### Project Goals
 

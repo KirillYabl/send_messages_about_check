@@ -96,7 +96,7 @@ if __name__ == '__main__':
             # Initialize chat_id if bot using firsttime
             if chat_id is None:
                 chat_id = get_chat_id(bot_token=bot_token)
-                with open('.env', 'a') as env:
+                with open('../.env', 'a') as env:
                     env.write(f'\nCHAT_ID={chat_id}')
 
             tg_handler = TelegramLogsHandler(bot=bot, chat_id=chat_id, level=logging.INFO)
