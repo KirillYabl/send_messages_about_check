@@ -27,8 +27,10 @@ pip install -r src/requirements.txt
 
 Then build docker image:
 ```
-docker build -t <YOUR DOCKER HUB USERNAME>/dvmn_checker_bot .
+docker build -t dvmn_checker_bot .
 ```
+
+Ofcourse you can change name `dvmn_checker_bot` to your name and add tags, if you want. Like `dvmn_checker_bot:v1`
 
 Or you can pull ready to use image:
 ```
@@ -50,13 +52,12 @@ python <PATH TO PROGRAM>\main.py
 Open command line (in windows `Win+R` and write `cmd` and `Ok`). Go to directory with program and write in cmd:
 
 ```
-docker run -dp 5000:5000 --env-file ./.env <YOUR DOCKER HUB USERNAME>/dvmn_checker_bot
+docker run -dp 5000:5000 --env-file ./.env dvmn_checker_bot
 ```
 
 You can drop `d` option if you want to watch logs.
 
-Or (if you pulled my repository):
-Or you can pull ready to use image:
+Or (if you pulled my repository) you can pull ready to use image:
 ```
 docker run -dp 5000:5000 --env-file ./.env kiablunovskii/dvmn_checker_bot
 ```
